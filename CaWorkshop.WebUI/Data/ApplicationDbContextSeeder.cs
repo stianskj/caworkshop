@@ -23,7 +23,6 @@ namespace CaWorkshop.WebUI.Data
                     new TodoItem { Title = "Reward yourself with a nice, long nap" },
                 }
             };
-
             context.TodoLists.Add(list);
             context.SaveChanges();
         }
