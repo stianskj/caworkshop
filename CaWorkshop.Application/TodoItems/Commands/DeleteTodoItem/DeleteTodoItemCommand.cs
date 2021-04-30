@@ -1,6 +1,5 @@
-﻿using CaWorkshop.Application.Common.Exceptions;
+﻿using Ardalis.GuardClauses;
 using CaWorkshop.Application.Common.Interfaces;
-using CaWorkshop.Domain.Entities;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +12,7 @@ namespace CaWorkshop.Application.TodoItems.Commands.DeleteTodoItem
     }
 
     public class DeleteTodoItemCommandHandler
-        : IRequestHandler<DeleteTodoItemCommand>
+        : AsyncRequestHandler<DeleteTodoItemCommand>
     {
         private readonly IApplicationDbContext _context;
 
@@ -22,21 +21,15 @@ namespace CaWorkshop.Application.TodoItems.Commands.DeleteTodoItem
             _context = context;
         }
 
-        public async Task<Unit> Handle(DeleteTodoItemCommand request,
-            CancellationToken cancellationToken)
+        protected override async Task Handle(DeleteTodoItemCommand request, CancellationToken cancellationToken)
         {
-            var entity = await _context.TodoItems.FindAsync(request.Id);
+            var entity = await _context.TodoItems.FindAsync(new object[] { request.Id }, cancellationToken);
 
-            if (entity == null)
-            {
-                throw new NotFoundException(nameof(TodoItem), request.Id);
-            }
+            Guard.Against.NotFound(entity, request.Id);
 
             _context.TodoItems.Remove(entity);
 
             await _context.SaveChangesAsync(cancellationToken);
-
-            return Unit.Value;
         }
     }
 }

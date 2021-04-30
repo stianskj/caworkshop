@@ -1,6 +1,5 @@
-﻿using CaWorkshop.Application.Common.Exceptions;
+﻿using Ardalis.GuardClauses;
 using CaWorkshop.Application.Common.Interfaces;
-using CaWorkshop.Domain.Entities;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +14,7 @@ namespace CaWorkshop.Application.TodoLists.Commands.UpdateTodoList
     }
 
     public class UpdateTodoListCommandHandler
-        : IRequestHandler<UpdateTodoListCommand>
+        : AsyncRequestHandler<UpdateTodoListCommand>
     {
         private readonly IApplicationDbContext _context;
 
@@ -24,21 +23,16 @@ namespace CaWorkshop.Application.TodoLists.Commands.UpdateTodoList
             _context = context;
         }
 
-        public async Task<Unit> Handle(UpdateTodoListCommand request,
+        protected override async Task Handle(UpdateTodoListCommand request,
             CancellationToken cancellationToken)
         {
-            var entity = await _context.TodoLists.FindAsync(request.Id);
+            var entity = await _context.TodoLists.FindAsync(new object[] { request.Id }, cancellationToken);
 
-            if (entity == null)
-            {
-                throw new NotFoundException(nameof(TodoList), request.Id);
-            }
+            Guard.Against.NotFound(entity, request.Id);
 
             entity.Title = request.Title;
 
             await _context.SaveChangesAsync(cancellationToken);
-
-            return Unit.Value;
         }
     }
 }
