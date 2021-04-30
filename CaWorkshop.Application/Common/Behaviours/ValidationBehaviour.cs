@@ -38,7 +38,7 @@ namespace CaWorkshop.Application.Common.Behaviours
                     .Where(f => f != null)
                     .ToList();
 
-                if (failures.Count != 0)
+                if (failures.Any())
                     throw new ValidationException(failures);
             }
 

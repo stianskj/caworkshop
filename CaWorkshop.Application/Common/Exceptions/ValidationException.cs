@@ -16,6 +16,9 @@ namespace CaWorkshop.Application.Common.Exceptions
         public ValidationException(List<ValidationFailure> failures)
             : this()
         {
+            //Errors = failures.GroupBy(e => e.PropertyName, e => e.ErrorMessage)
+            //    .ToDictionary<string, string[]>();
+
             var propertyNames = failures
                 .Select(e => e.PropertyName)
                 .Distinct();
