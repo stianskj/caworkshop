@@ -24,6 +24,7 @@ namespace CaWorkshop.Application.TodoLists.Commands.CreateTodoList
         public async Task<int> Handle(CreateTodoListCommand request,
             CancellationToken cancellationToken)
         {
+            // how to guard against non-unique titles?
             var entity = new TodoList();
 
             entity.Title = request.Title;
