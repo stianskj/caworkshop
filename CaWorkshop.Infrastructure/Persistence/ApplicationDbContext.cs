@@ -5,6 +5,7 @@ using IdentityServer4.EntityFramework.Options;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using System;
 using System.Reflection;
 
 namespace CaWorkshop.Infrastructure.Persistence
@@ -15,6 +16,15 @@ namespace CaWorkshop.Infrastructure.Persistence
             DbContextOptions options,
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder
+                .LogTo(Console.WriteLine)
+                .EnableDetailedErrors();
+
+            base.OnConfiguring(optionsBuilder);
         }
 
         public DbSet<TodoItem> TodoItems { get; set; }
